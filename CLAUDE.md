@@ -20,12 +20,28 @@ A mobile-first PWA for **couples**. Partner A creates a **poll** of 2–6 **outf
 
 ## Stack
 
-- React 18+, Vite, TypeScript (strict), Tailwind CSS
-- `vite-plugin-pwa` (Workbox, `injectManifest` strategy so we can handle `push` events in a custom SW)
-- Supabase: Postgres + RLS, Auth (magic link only), Storage (private bucket), Realtime, Edge Functions (Deno)
-- Web Push (VAPID) sent from an Edge Function
-- Netlify hosting (SPA, deploy previews on PRs)
-- pnpm, ESLint, Prettier, Vitest + Testing Library, Playwright, GitHub Actions
+Decided in the stack review (2026-10). Changing any line here needs a spec or an explicit decision from the user.
+
+| Layer | Choice | Notes |
+| --- | --- | --- |
+| Runtime | Node 22 LTS, pnpm 10 | Pinned via `.nvmrc` and `packageManager` |
+| UI | React 19, Vite, TypeScript (strict) | |
+| Routing | React Router v7 (SPA / library mode) | |
+| Server state | TanStack Query | Realtime events update or invalidate the query cache. Optimistic updates for swipes. |
+| Client state | Zustand | Only for local UI/draft state (e.g. the create-poll draft). Never copy server data into it. |
+| Styling / UI | Tailwind CSS v4, shadcn/ui (Radix) | Components are copied into `src/components/ui/`, and we own and edit them |
+| Gestures / animation | Motion (`motion/react`) | Swipe deck drag and fling, transitions. Respect `useReducedMotion`. |
+| Forms / validation | React Hook Form, Zod | Zod schemas are shared between client forms and Edge Function input parsing |
+| Dates | date-fns (+ `@date-fns/tz`) | |
+| PWA | `vite-plugin-pwa` (Workbox, `injectManifest`) | Custom SW in `src/sw.ts` handles `push` events |
+| Backend | Supabase: Postgres + RLS, Auth (magic link only), Storage (private bucket), Realtime, Edge Functions (Deno) | |
+| Scheduled jobs | `pg_cron` (+ `pg_net` to call Edge Functions) | E.g. closing expired polls every minute |
+| Push | Web Push (VAPID) sent from an Edge Function | No third-party push service |
+| Hosting | Netlify | SPA, deploy previews on PRs |
+| Lint / format | ESLint (typescript-eslint, react-hooks, jsx-a11y), Prettier (+ Tailwind plugin) | |
+| Tests | Vitest + Testing Library (unit/component), pgTAP via `supabase test db` (schema/RLS), Playwright (e2e, mobile profiles) | |
+| CI | GitHub Actions | |
+| Error tracking / analytics | **None for MVP** | Don't add SDKs or tracking scripts. Revisit with a spec once there are real users. |
 
 ## Commands
 
@@ -36,13 +52,14 @@ pnpm lint           # eslint
 pnpm typecheck      # tsc --noEmit
 pnpm test           # vitest
 pnpm test:e2e       # playwright (mobile viewports)
+pnpm test:db        # supabase test db (pgTAP: schema, constraints, RLS)
 pnpm db:types       # supabase gen types typescript --local > src/lib/database.types.ts
 supabase start      # local stack
 supabase db reset   # re-apply migrations + seed
 supabase migration new <name>
 ```
 
-Before considering a change done, run: `pnpm lint && pnpm typecheck && pnpm test`.
+Before considering a change done, run: `pnpm lint && pnpm typecheck && pnpm test`. If `supabase/` changed, also run `pnpm test:db`.
 
 ## Suggested project layout
 
@@ -66,12 +83,13 @@ src/
     vote/         # swipe deck
     history/      # wardrobe gallery
     push/         # subscribe/unsubscribe, permission UX
-  components/     # shared UI primitives
+  components/     # shared UI primitives (ui/ = shadcn components)
   lib/            # supabase client, database.types.ts, image utils
   sw.ts           # custom service worker (precache + push + notificationclick)
 supabase/
   migrations/     # SQL migrations (source of truth for schema + RLS)
   functions/      # edge functions (send-push, close-expired-polls)
+  tests/          # pgTAP tests (*.test.sql), one per table/policy group
   seed.sql
 e2e/              # playwright specs
 ```
@@ -95,11 +113,11 @@ Rules:
 - The poll author **cannot vote** on their own poll. Enforce in RLS/trigger, not just UI.
 - A poll is **complete** when the voter has swiped every outfit, or when `deadline_at` passes. Closing triggers a "results are in" push.
 - Ranking: likes desc, then `position`. With one voter, ties are expected. Show all liked outfits as "liked" and highlight the first one as the top pick. (Open question: a tie-break "pick one" step.)
-- Expired polls are closed by a scheduled job (`pg_cron` or a scheduled Edge Function). The UI should also treat `deadline_at < now()` as closed.
+- Expired polls are closed by a `pg_cron` job (every minute), which calls the push Edge Function via `pg_net`. The UI should also treat `deadline_at < now()` as closed.
 
 ## Security and privacy (non-negotiable)
 
-- **RLS on every table.** Access is scoped via `couple_members`: a user may only read and write rows belonging to their own couple. Write a test for each policy.
+- **RLS on every table.** Access is scoped via `couple_members`: a user may only read and write rows belonging to their own couple. Write a pgTAP test for each policy, impersonating a member, the partner and an outsider.
 - The Storage bucket `outfits` is **private**. Path convention: `{couple_id}/{poll_id}/{outfit_id}.webp`. Storage policies check couple membership from the first path segment. Display images with signed URLs (short TTL).
 - Never ship the service role key or VAPID private key to the client. Those keys belong only in Edge Function secrets.
 - Strip EXIF/GPS on the client before upload (re-encoding through a canvas does this).
@@ -127,8 +145,8 @@ Subscribe to `polls`/`votes` changes for the current couple so the author sees v
 
 - TypeScript strict. No `any`. Use generated `database.types.ts` for Supabase types and never edit it by hand.
 - Every schema change is a new migration in `supabase/migrations/`. Never edit an applied migration.
-- Use function components and hooks. Prefer TanStack Query (or a thin equivalent) for server state over ad-hoc `useEffect` fetching.
-- Tailwind for styling. No CSS-in-JS.
+- Use function components and hooks. Server state goes through TanStack Query, never ad-hoc `useEffect` fetching. Zustand is only for client-only state.
+- Tailwind for styling. No CSS-in-JS. Start from shadcn/ui components before building new primitives.
 - Tests: unit-test pure logic (ranking, image resize, deadline handling). Component-test the swipe deck. Cover the main flow end to end in Playwright with a mobile device profile: sign in → pair → create poll → vote → results.
 - Commits: Conventional Commits (`feat:`, `fix:`, `chore:` …), with `[NNN/T#]` appended for spec tasks.
 - Local overrides go in `.claude/settings.local.json` (git-ignored), not in the shared `settings.json`.

@@ -26,9 +26,9 @@ Set up the empty repository so that every later feature spec can be built, teste
 
 | ID | Acceptance criterion (EARS) |
 | --- | --- |
-| R1.1 | THE SYSTEM SHALL use pnpm, Node 20+ (pinned via `.nvmrc` and `packageManager`), React, Vite and TypeScript in `strict` mode. |
+| R1.1 | THE SYSTEM SHALL use pnpm 10, Node 22 LTS (pinned via `.nvmrc` and `packageManager`), React 19, Vite and TypeScript in `strict` mode, plus the libraries in the CLAUDE.md stack table (React Router v7, TanStack Query, Zustand, Tailwind v4 + shadcn/ui, Motion, React Hook Form + Zod, date-fns). |
 | R1.2 | WHEN a developer runs `pnpm install && pnpm dev` THE SYSTEM SHALL serve the app at `http://localhost:5173`. |
-| R1.3 | THE SYSTEM SHALL provide the scripts `dev`, `build`, `preview`, `lint`, `format`, `typecheck`, `test`, `test:e2e` and `db:types` listed in CLAUDE.md. |
+| R1.3 | THE SYSTEM SHALL provide the scripts `dev`, `build`, `preview`, `lint`, `format`, `typecheck`, `test`, `test:e2e`, `test:db` and `db:types` listed in CLAUDE.md. |
 | R1.4 | THE SYSTEM SHALL use the folder layout in CLAUDE.md (`src/app`, `src/features`, `src/components`, `src/lib`, `src/sw.ts`, `supabase/`, `e2e/`). |
 | R1.5 | THE SYSTEM SHALL provide `.env.example` listing every variable in the README, and `.env*` files other than the example SHALL be git-ignored. |
 
@@ -41,6 +41,8 @@ Set up the empty repository so that every later feature spec can be built, teste
 | R2.1 | THE SYSTEM SHALL include a `supabase/` project (`config.toml`, `migrations/`, `seed.sql`, `functions/`) that starts with `supabase start`. |
 | R2.2 | THE SYSTEM SHALL expose a single typed Supabase client in `src/lib/supabase.ts`, built from `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`. |
 | R2.3 | IF either Supabase env variable is missing THEN THE SYSTEM SHALL fail at startup with a clear error message naming the variable. |
+| R2.4 | THE SYSTEM SHALL run pgTAP tests with `pnpm test:db` (`supabase test db`), with at least one passing smoke test in `supabase/tests/`. |
+| R2.5 | THE SYSTEM SHALL enable the `pg_cron` and `pg_net` extensions in a migration. |
 
 ### R3: PWA shell
 
@@ -85,11 +87,11 @@ Set up the empty repository so that every later feature spec can be built, teste
 
 ## Out of scope
 
-Auth, pairing, polls, push notifications (later specs). Tailwind design tokens beyond a basic theme colour. Custom domain.
+Auth, pairing, polls, push notifications (later specs). Error tracking and analytics (none for MVP). Tailwind design tokens beyond a basic theme colour. Custom domain.
 
 ## Open questions
 
 - [ ] App display name and short name for the manifest: "OhYeah-SuitsYou" / "SuitsYou"?
 - [ ] Brand / theme colour (placeholder: `#E11D48` rose)?
 - [ ] Should CI run e2e on every PR (slower) or only on `main`? (Assumed: every PR.)
-- [ ] Router choice: React Router (assumed) or TanStack Router?
+- [x] Router choice: **React Router v7** (decided in the stack review).

@@ -24,17 +24,19 @@ OhYeah-SuitsYou is a mobile-first **Progressive Web App** for couples. One partn
 
 ## Tech stack
 
-- **Frontend:** React, Vite, TypeScript, Tailwind CSS, [`vite-plugin-pwa`](https://vite-pwa-org.netlify.app/) (Workbox)
-- **Backend:** [Supabase](https://supabase.com/) for Postgres, Auth (magic link), Storage, Realtime and Edge Functions
+- **Frontend:** React 19, Vite, TypeScript, React Router v7, TanStack Query, Zustand, Tailwind CSS v4, shadcn/ui, Motion (swipe gestures), React Hook Form + Zod, date-fns
+- **PWA:** [`vite-plugin-pwa`](https://vite-pwa-org.netlify.app/) (Workbox, custom service worker)
+- **Backend:** [Supabase](https://supabase.com/) for Postgres + RLS, Auth (magic link), Storage, Realtime, Edge Functions and `pg_cron`
 - **Notifications:** Web Push (VAPID), sent from a Supabase Edge Function
 - **Hosting:** Netlify
-- **Tooling:** pnpm, ESLint, Prettier, Vitest, Testing Library, Playwright, GitHub Actions
+- **Tooling:** Node 22 LTS, pnpm 10, ESLint, Prettier, Vitest, Testing Library, pgTAP, Playwright, GitHub Actions
+- **Monitoring and analytics:** none for MVP (by design)
 
 ## Getting started
 
 ### Prerequisites
 
-- Node.js 20+ and [pnpm](https://pnpm.io/)
+- Node.js 22 LTS and [pnpm](https://pnpm.io/) 10
 - [Supabase CLI](https://supabase.com/docs/guides/cli) (local Supabase runs on Docker)
 
 ### Setup
@@ -70,6 +72,7 @@ Generate VAPID keys with `npx web-push generate-vapid-keys`.
 | `pnpm typecheck` | `tsc --noEmit` |
 | `pnpm test` | Unit and component tests (Vitest) |
 | `pnpm test:e2e` | End-to-end tests (Playwright, mobile viewports) |
+| `pnpm test:db` | Database tests: schema, constraints, RLS (pgTAP) |
 | `pnpm db:types` | Regenerate Supabase TypeScript types |
 
 ## Testing on a phone

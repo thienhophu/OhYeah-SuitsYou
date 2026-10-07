@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- Node.js 20+ and pnpm
+- Node.js 22 LTS and pnpm 10
 - Supabase CLI (and Docker, for the local stack)
 - Git, with access to this repository
 - [Claude Code](https://code.claude.com/docs). Use whichever surface you like: the terminal CLI (`claude`), the VS Code or JetBrains extension, the desktop app, or claude.ai/code in the browser. The workflow is the same on all of them.
