@@ -87,6 +87,21 @@ Netlify builds on every push. Pull requests get deploy previews, and `main` depl
 - SPA fallback: `/* /index.html 200`
 - Migrations and Edge Functions are deployed with the Supabase CLI (`supabase db push`, `supabase functions deploy`).
 
+## Development workflow (spec-driven, with Claude Code)
+
+Features are built spec-first, with Claude Code agents doing the work and you approving each stage:
+
+```
+/spec-new "couple pairing"   → requirements.md  (you approve)
+/spec-design 003             → design.md        (you approve)
+/spec-tasks 003              → tasks.md         (you approve)
+/spec-implement 003 all      → code + tests, one commit per task
+/spec-verify 003             → traceability report + security review
+/spec-status                 → where every feature stands
+```
+
+See [`specs/README.md`](specs/README.md) for the process and roadmap, and [`CLAUDE.md`](CLAUDE.md) for the rules agents follow.
+
 ## Privacy
 
 Outfit photos are personal. They are stored in a **private** bucket, served only through short-lived signed URLs, and protected by row-level security so that only the two members of a couple can see them. Location data (EXIF/GPS) is removed before upload.

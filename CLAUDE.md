@@ -2,6 +2,18 @@
 
 Guidance for Claude Code when working in this repository. Read `README.md` for the product overview.
 
+## Spec-driven development (read first)
+
+All feature work follows **requirements → design → tasks → implement → verify**. The full process is in `specs/README.md`.
+
+- **No production code without an approved spec.** If asked to build something that has no spec, suggest `/spec-new` first. Small fixes and chores are fine without one.
+- Commands: `/spec-new`, `/spec-design NNN`, `/spec-tasks NNN`, `/spec-implement NNN [T#|all]`, `/spec-verify NNN`, `/spec-status`.
+- **Never set `status: approved` in a spec unless the user explicitly approves it.**
+- Specs win over this file on feature behaviour. This file wins on conventions and security.
+- Name tests after acceptance criteria (`it('R2.3: …')`) and tag commits with `[NNN/T#]`.
+- If the code needs to differ from the spec, stop and update the spec first.
+- Subagents: `implementer` (builds one task), `spec-verifier` (read-only traceability audit), `security-reviewer` (RLS/storage/secrets review).
+
 ## Product in one paragraph
 
 A mobile-first PWA for **couples**. Partner A creates a **poll** of 2–6 **outfits** (one photo each, optional caption). Partner B **swipes** right (like) or left (pass) on each outfit. Results rank outfits by likes. Either partner can create polls, and only the *other* partner votes. Polls can have an optional **deadline**. Past polls form a shared **wardrobe history**.
@@ -35,6 +47,15 @@ Before considering a change done, run: `pnpm lint && pnpm typecheck && pnpm test
 ## Suggested project layout
 
 ```
+.claude/
+  settings.json   # permissions + hooks (shared, committed)
+  agents/         # implementer, spec-verifier, security-reviewer
+  skills/         # /spec-new, /spec-design, /spec-tasks, /spec-implement, /spec-verify, /spec-status
+  hooks/          # guard-files (blocks edits to applied migrations, generated types, .env), format, session-start
+specs/
+  README.md       # process, conventions, roadmap/status table
+  _templates/     # requirements.md, design.md, tasks.md
+  NNN-slug/       # requirements.md, design.md, tasks.md, verification.md
 src/
   app/            # routes, layout, providers
   features/
@@ -108,7 +129,8 @@ Subscribe to `polls`/`votes` changes for the current couple so the author sees v
 - Use function components and hooks. Prefer TanStack Query (or a thin equivalent) for server state over ad-hoc `useEffect` fetching.
 - Tailwind for styling. No CSS-in-JS.
 - Tests: unit-test pure logic (ranking, image resize, deadline handling). Component-test the swipe deck. Cover the main flow end to end in Playwright with a mobile device profile: sign in → pair → create poll → vote → results.
-- Commits: Conventional Commits (`feat:`, `fix:`, `chore:` …).
+- Commits: Conventional Commits (`feat:`, `fix:`, `chore:` …), with `[NNN/T#]` appended for spec tasks.
+- Local overrides go in `.claude/settings.local.json` (git-ignored), not in the shared `settings.json`.
 
 ## Out of scope for MVP (don't build unless asked)
 
