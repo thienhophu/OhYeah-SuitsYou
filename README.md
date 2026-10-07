@@ -100,7 +100,7 @@ Features are built spec-first, with Claude Code agents doing the work and you ap
 /spec-status                 → where every feature stands
 ```
 
-See [`specs/README.md`](specs/README.md) for the process and roadmap, and [`CLAUDE.md`](CLAUDE.md) for the rules agents follow.
+New to the project? Start with the **[developer guide](docs/guide/README.md)**, a step-by-step walkthrough of using the agents in daily work. See [`specs/README.md`](specs/README.md) for the process and roadmap, and [`CLAUDE.md`](CLAUDE.md) for the rules agents follow.
 
 ## Privacy
 

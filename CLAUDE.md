@@ -52,6 +52,7 @@ Before considering a change done, run: `pnpm lint && pnpm typecheck && pnpm test
   agents/         # implementer, spec-verifier, security-reviewer
   skills/         # /spec-new, /spec-design, /spec-tasks, /spec-implement, /spec-verify, /spec-status
   hooks/          # guard-files (blocks edits to applied migrations, generated types, .env), format, session-start
+docs/guide/       # developer guide: how to work with agents + SDD day to day
 specs/
   README.md       # process, conventions, roadmap/status table
   _templates/     # requirements.md, design.md, tasks.md
