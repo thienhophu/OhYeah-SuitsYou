@@ -1,7 +1,7 @@
 ---
 spec: 001-project-scaffold
 doc: requirements
-status: approved
+status: draft
 updated: 2026-10-08
 ---
 
@@ -68,6 +68,7 @@ Set up the empty repository so that every later feature spec can be built, teste
 | R4.3 | THE SYSTEM SHALL configure Playwright with an iPhone-sized and a Pixel-sized device profile, with at least one passing e2e test that loads the home screen. |
 | R4.4 | WHEN a PR is opened or updated THE SYSTEM SHALL run lint, typecheck, unit tests, build and e2e in GitHub Actions. |
 | R4.5 | IF any CI step fails THEN THE SYSTEM SHALL report the workflow as failed. |
+| R4.6 | WHEN a PR is opened or updated THE SYSTEM SHALL start a local Supabase stack in GitHub Actions and run the pgTAP tests (`supabase test db`). |
 
 ### R5: Deployment
 
@@ -95,3 +96,4 @@ Auth, pairing, polls, push notifications (later specs). Error tracking and analy
 - [~] Brand / theme colour (placeholder: `#E11D48` rose)? *Approved with this placeholder; easy to change later.*
 - [~] Should CI run e2e on every PR (slower) or only on `main`? *Approved with the assumption: every PR.*
 - [x] Router choice: **React Router v7** (decided in the stack review).
+- [x] Run database tests in CI? **Yes, on every PR** (added R4.6 while designing; needs re-approval).
