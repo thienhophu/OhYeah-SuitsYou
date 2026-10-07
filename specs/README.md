@@ -48,7 +48,7 @@ Specs are living documents. If implementation reveals that a requirement is wron
 
 | # | Feature | Status |
 | --- | --- | --- |
-| [001](001-project-scaffold/) | Project scaffold (Vite, PWA, Tailwind, Supabase, lint/test, CI, Netlify) | requirements: draft |
+| [001](001-project-scaffold/) | Project scaffold (Vite, PWA, Tailwind, Supabase, lint/test, CI, Netlify) | requirements: approved |
 | 002 | Auth: magic-link sign-in, profile | not started |
 | 003 | Couple pairing: invite code/link, join, single-couple rule | not started |
 | 004 | Create poll: capture or pick 2–6 photos, client image pipeline, upload | not started |

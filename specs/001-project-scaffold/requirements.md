@@ -1,8 +1,8 @@
 ---
 spec: 001-project-scaffold
 doc: requirements
-status: draft
-updated: 2026-10-07
+status: approved
+updated: 2026-10-08
 ---
 
 # 001: Project scaffold
@@ -91,7 +91,7 @@ Auth, pairing, polls, push notifications (later specs). Error tracking and analy
 
 ## Open questions
 
-- [ ] App display name and short name for the manifest: "OhYeah-SuitsYou" / "SuitsYou"?
-- [ ] Brand / theme colour (placeholder: `#E11D48` rose)?
-- [ ] Should CI run e2e on every PR (slower) or only on `main`? (Assumed: every PR.)
+- [~] App display name and short name for the manifest: "OhYeah-SuitsYou" / "SuitsYou"? *Approved with this placeholder; easy to change later.*
+- [~] Brand / theme colour (placeholder: `#E11D48` rose)? *Approved with this placeholder; easy to change later.*
+- [~] Should CI run e2e on every PR (slower) or only on `main`? *Approved with the assumption: every PR.*
 - [x] Router choice: **React Router v7** (decided in the stack review).
