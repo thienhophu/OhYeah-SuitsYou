@@ -59,3 +59,13 @@ Specs are living documents. If implementation reveals that a requirement is wron
 | 009 | Wardrobe history: gallery of past polls and winners | not started |
 
 Update this table when a spec changes stage (the `/spec-*` commands do this).
+
+## Later: autonomous loop (parked)
+
+Not built yet. Turn this on once the manual flow has proven trustworthy over a few specs. Only the **implement** step should ever loop. Requirements, design and task approval stay with a human.
+
+- [ ] `scripts/spec-loop.sh NNN`: runs `claude -p "/spec-implement NNN" --permission-mode acceptEdits` once per task, each in a fresh context. It stops when no `[ ]` tasks remain, on a `[!]` blocked task, on a non-zero exit, or at a maximum run count. When done, it runs `/spec-verify NNN`.
+- [ ] Optional Stop hook that keeps a session working while `[ ]` tasks remain. Active only with `SPEC_LOOP=1`, with an iteration cap.
+- [ ] Possibly later: a cloud Routine that picks up specs marked "ready to implement", and a multi-agent Workflow for tasks marked `(parallel)`.
+
+Signals that it's ready to try: specs pass `/spec-verify` on the first try, implementer runs rarely need correcting, and the security reviewer finds nothing blocking.
